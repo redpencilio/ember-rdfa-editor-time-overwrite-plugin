@@ -1,5 +1,5 @@
 {
-  "name": "ember-rdfa-editor-time-overwrite-plugin",
+  "name": "@lblod/ember-rdfa-editor-time-overwrite-plugin",
   "version": "0.0.0",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
