@@ -51,6 +51,7 @@ export default Component.extend({
 
   actions: {
     insert(){
+      // TODO: Validations are done because Safari currently does not support <input type="time">. They should be removed once Safari (and some other minor browser) support this feature.
       const time = this.newTime.trim().replace(/\s+/g, '').replace(/AM|PM/g, match => ` ${match}`);
       const hour = time.split(':')[0];
 
