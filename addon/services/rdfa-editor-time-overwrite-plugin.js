@@ -1,3 +1,4 @@
+/* eslint-disable require-yield */
 import { getOwner } from '@ember/application';
 import Service from '@ember/service';
 import EmberObject, { computed } from '@ember/object';
@@ -34,13 +35,13 @@ const RdfaEditorTimeOverwritePlugin = Service.extend({
     if (contexts.length === 0) return [];
 
     const hints = [];
-    contexts.forEach((context) => {
-      let relevantContext = this.detectRelevantContext(context)
-      if (relevantContext) {
-        hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
-        hints.pushObjects(this.generateHintsForContext(context));
-      }
-    });
+    contexts
+      .filter( this.detectRelevantContext )
+      .forEach( context => {
+          hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
+          hints.pushObjects(this.generateHintsForContext(context));
+      });
+
     const cards = hints.map( (hint) => this.generateCard(hrId, hintsRegistry, editor, hint));
     if(cards.length > 0){
       hintsRegistry.addHints(hrId, this.get('who'), cards);
@@ -59,10 +60,9 @@ const RdfaEditorTimeOverwritePlugin = Service.extend({
    * @private
    */
   detectRelevantContext(context){
-    return context.text.toLowerCase().indexOf('hello') >= 0;
+    const lastTriple = context.context.slice(-1)[0];
+    return lastTriple.datatype == 'http://www.w3.org/2001/XMLSchema#time';
   },
-
-
 
   /**
    * Maps location of substring back within reference location
@@ -99,7 +99,8 @@ const RdfaEditorTimeOverwritePlugin = Service.extend({
       info: {
         label: this.get('who'),
         plainValue: hint.text,
-        htmlString: '<b>hello world</b>',
+        value: hint.value.trim().split(':').slice(0, 2).join(':'), // Remove seconds (HH:MM:SS -> HH:MM)
+        datatype: hint.datatype,
         location: hint.location,
         hrId, hintsRegistry, editor
       },
@@ -120,11 +121,15 @@ const RdfaEditorTimeOverwritePlugin = Service.extend({
    * @private
    */
   generateHintsForContext(context){
+    const triple = context.context.slice(-1)[0];
     const hints = [];
-    const index = context.text.toLowerCase().indexOf('hello');
-    const text = context.text.slice(index, index+5);
-    const location = this.normalizeLocation([index, index + 5], context.region);
-    hints.push({text, location});
+    const value = triple.object;
+    const content= triple.content;
+    const datatype = triple.datatype;
+    const text = context.text || '';
+    const location = context.region;
+    hints.push({text, location, context, value, content, datatype});
+
     return hints;
   }
 });
