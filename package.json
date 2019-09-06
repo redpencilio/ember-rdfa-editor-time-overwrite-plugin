@@ -5,7 +5,10 @@
   "keywords": [
     "ember-addon"
   ],
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lblod/ember-rdfa-editor-time-overwrite-plugin.git"
+  },
   "license": "MIT",
   "author": "redpencil.io",
   "directories": {
