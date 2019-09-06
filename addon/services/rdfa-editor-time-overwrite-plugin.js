@@ -1,7 +1,7 @@
 /* eslint-disable require-yield */
 import { getOwner } from '@ember/application';
 import Service from '@ember/service';
-import EmberObject, { computed } from '@ember/object';
+import EmberObject from '@ember/object';
 import { task } from 'ember-concurrency';
 
 /**
@@ -32,19 +32,17 @@ const RdfaEditorTimeOverwritePlugin = Service.extend({
    * @public
    */
   execute: task(function * (hrId, contexts, hintsRegistry, editor) {
-    if (contexts.length === 0) return [];
-
     const hints = [];
     contexts
-      .filter( this.detectRelevantContext )
-      .forEach( context => {
+      .filter (this.detectRelevantContext)
+      .forEach (context => {
           hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
           hints.pushObjects(this.generateHintsForContext(context));
       });
 
-    const cards = hints.map( (hint) => this.generateCard(hrId, hintsRegistry, editor, hint));
-    if(cards.length > 0){
-      hintsRegistry.addHints(hrId, this.get('who'), cards);
+    const cards = hints.map (hint => this.generateCard(hrId, hintsRegistry, editor, hint));
+    if (cards.length > 0) {
+      hintsRegistry.addHints (hrId, this.get('who'), cards);
     }
   }),
 
